@@ -1,3 +1,5 @@
+import kotlin.Boolean;
+
 CREATE TABLE country(
   country_code_cca3 TEXT PRIMARY KEY NOT NULL,
   country_code_cca2 TEXT NOT NULL,
