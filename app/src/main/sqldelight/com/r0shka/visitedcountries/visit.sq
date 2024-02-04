@@ -1,0 +1,18 @@
+CREATE TABLE visit(
+  id TEXT PRIMARY KEY NOT NULL,
+  country_code_cca3 TEXT NOT NULL,
+  date INTEGER NOT NULL
+);
+
+insert:
+INSERT INTO visit
+VALUES ?;
+
+selectAll:
+SELECT *
+FROM visit;
+
+findOneById:
+SELECT *
+FROM visit
+WHERE id = ?;

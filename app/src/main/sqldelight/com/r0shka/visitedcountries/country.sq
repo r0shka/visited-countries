@@ -1,4 +1,4 @@
-import kotlin.Boolean;
+import com.android.build.gradle.internal.dsl.decorator.SupportedPropertyType.Var.Boolean;
 
 CREATE TABLE country(
   country_code_cca3 TEXT PRIMARY KEY NOT NULL,
@@ -11,6 +11,25 @@ CREATE TABLE country(
   region TEXT NOT NULL,
   flag_svg_url TEXT NOT NULL
 );
+
+selectAll:
+SELECT *
+FROM country;
+
+findOneByCountryCode:
+SELECT *
+FROM country
+WHERE country_code_cca3 = ?;
+
+findOneByRegion:
+SELECT *
+FROM country
+WHERE region = ?;
+
+findOneByContinent:
+SELECT *
+FROM country
+WHERE continent = ?;
 
 INSERT INTO country (country_code_cca3,country_code_cca2,is_independent,is_un_member,population,driving_side,continent,region,flag_svg_url)
 VALUES
