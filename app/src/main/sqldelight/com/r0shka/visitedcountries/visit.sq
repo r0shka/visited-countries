@@ -1,18 +1,18 @@
-CREATE TABLE visit(
+CREATE TABLE DbVisit(
   id TEXT PRIMARY KEY NOT NULL,
   country_code_cca3 TEXT NOT NULL,
   date INTEGER NOT NULL
 );
 
 insert:
-INSERT INTO visit
+INSERT INTO DbVisit
 VALUES ?;
 
 selectAll:
 SELECT *
-FROM visit;
+FROM DbVisit;
 
 findOneById:
 SELECT *
-FROM visit
+FROM DbVisit
 WHERE id = ?;

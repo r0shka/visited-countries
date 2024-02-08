@@ -1,10 +1,8 @@
-import com.android.build.gradle.internal.dsl.decorator.SupportedPropertyType.Var.Boolean;
-
-CREATE TABLE country(
+CREATE TABLE DbCountry(
   country_code_cca3 TEXT PRIMARY KEY NOT NULL,
   country_code_cca2 TEXT NOT NULL,
-  is_independent INTEGER AS Boolean NOT NULL,
-  is_un_member INTEGER AS Boolean NOT NULL,
+  is_independent INTEGER NOT NULL,
+  is_un_member INTEGER NOT NULL,
   population INTEGER NOT NULL,
   driving_side TEXT NOT NULL,
   continent TEXT NOT NULL,
@@ -14,24 +12,24 @@ CREATE TABLE country(
 
 selectAll:
 SELECT *
-FROM country;
+FROM DbCountry;
 
 findOneByCountryCode:
 SELECT *
-FROM country
+FROM DbCountry
 WHERE country_code_cca3 = ?;
 
-findOneByRegion:
+findAllByRegion:
 SELECT *
-FROM country
+FROM DbCountry
 WHERE region = ?;
 
-findOneByContinent:
+findAllByContinent:
 SELECT *
-FROM country
+FROM DbCountry
 WHERE continent = ?;
 
-INSERT INTO country (country_code_cca3,country_code_cca2,is_independent,is_un_member,population,driving_side,continent,region,flag_svg_url)
+INSERT INTO DbCountry (country_code_cca3,country_code_cca2,is_independent,is_un_member,population,driving_side,continent,region,flag_svg_url)
 VALUES
 ('AND','AD',1,1,77265,'right','Europe','Southern Europe','https://flagcdn.com/ad.svg'),
 ('LAO','LA',1,1,7275556,'right','Asia','South-Eastern Asia','https://flagcdn.com/la.svg'),
