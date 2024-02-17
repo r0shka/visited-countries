@@ -1,5 +1,6 @@
 package com.r0shka.visitedcountries.data
 
+import android.util.Log
 import com.r0shka.visitedcountries.domain.entities.Country
 import com.r0shka.visitedcountries.domain.entities.Visit
 import com.r0shka.visitedcountries.domain.entities.toDomain

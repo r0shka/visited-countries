@@ -83,9 +83,10 @@ enum class Region(val value: String) {
     MELANESIA("Melanesia"),
     POLYNESIA("Polynesia"),
     MICRONESIA("Micronesia"),
-    AUSTRALIA_AND_NEW_ZEALAND("Australia and New Zealand");
+    AUSTRALIA_AND_NEW_ZEALAND("Australia and New Zealand"),
+    UNDEFINED("");
 
     companion object {
-        infix fun from(value: String): Region = entries.first { it.value == value }
+        infix fun from(value: String): Region = entries.firstOrNull { it.value == value } ?: UNDEFINED
     }
 }

@@ -1,7 +1,11 @@
 package com.r0shka.visitedcountries.features.mainscreen
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.CreationExtras
+import com.r0shka.visitedcountries.data.LocalDataSource
 import com.r0shka.visitedcountries.data.MainRepository
 import com.r0shka.visitedcountries.data.Result
 import kotlinx.coroutines.async
@@ -12,15 +16,19 @@ import kotlinx.coroutines.launch
 
 class MainViewModel(
     private val repo: MainRepository,
-    private val mapper: UiModelMapper
+    private val mapper: UiModelMapper,
 ) : ViewModel() {
+
+    init {
+        load()
+    }
 
     private val countries = mutableListOf<CountryUiModel>()
 
     private val viewState: MutableStateFlow<ViewState> = MutableStateFlow(ViewState.Loading)
     fun viewState(): StateFlow<ViewState> = viewState.asStateFlow()
 
-    fun load() = viewModelScope.launch {
+    private fun load() = viewModelScope.launch {
         val countriesResult = async { repo.getAllCountries() }.await()
         val visitsResult = async { repo.getAllVisits() }.await()
 
@@ -36,7 +44,24 @@ class MainViewModel(
                     )
                 }
                 if (countries.isNotEmpty()) {
-                    viewState.value = ViewState.Success(countries)
+                    viewState.value = ViewState.Success(
+                        visitedCountries = countries
+                            .toList()
+                            .sortedBy {
+                                it.localizedDisplayName
+                            }
+                            .filter {
+                                it.visited
+                            },
+                        availableCountries = countries
+                            .toList()
+                            .sortedBy {
+                                it.localizedDisplayName
+                            }
+                            .filter {
+                                it.visited.not()
+                            },
+                    )
                 } else {
                     viewState.value = ViewState.Empty
                 }
@@ -46,6 +71,24 @@ class MainViewModel(
         }
     }
 
+    companion object {
+        val Factory: ViewModelProvider.Factory = object : ViewModelProvider.Factory {
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : ViewModel> create(
+                modelClass: Class<T>,
+                extras: CreationExtras
+            ): T {
+                val application = checkNotNull(extras[APPLICATION_KEY])
+
+                return MainViewModel(
+                    repo = MainRepository(
+                        dataSource = LocalDataSource(context = application.applicationContext)
+                    ),
+                    mapper = UiModelMapper(context = application.applicationContext),
+                ) as T
+            }
+        }
+    }
 
 }
 
@@ -53,7 +96,8 @@ sealed class ViewState {
     data object Loading : ViewState()
     data object Empty : ViewState()
     data class Success(
-        val countries: List<CountryUiModel>
+        val visitedCountries: List<CountryUiModel>,
+        val availableCountries: List<CountryUiModel>,
     ) : ViewState()
 
     data object Error : ViewState()
