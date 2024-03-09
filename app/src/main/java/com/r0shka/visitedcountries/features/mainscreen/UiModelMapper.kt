@@ -22,7 +22,7 @@ class UiModelMapper(context: Context) {
     }
 
     private fun getFlag(countryCode: String): Int {
-        val validCountryCode = if (countryCode == "do") {   // do is not
+        val validCountryCode = if (countryCode == "DO") {   // DO is not valid xml name, so icon was renamed to dom.xml
             "dom"
         } else {
             countryCode.lowercase()

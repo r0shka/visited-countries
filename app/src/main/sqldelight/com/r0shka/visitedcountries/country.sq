@@ -14,6 +14,11 @@ selectAll:
 SELECT *
 FROM DbCountry;
 
+selectAllIndependent:
+SELECT *
+FROM DbCountry
+WHERE is_independent = 1;
+
 findOneByCountryCode:
 SELECT *
 FROM DbCountry
@@ -246,7 +251,7 @@ VALUES
 ('MNP','MP',0,0,57557,'right','Oceania','Micronesia','https://flagcdn.com/mp.svg'),
 ('REU','RE',0,0,840974,'right','Africa','Eastern Africa','https://flagcdn.com/re.svg'),
 ('IOT','IO',0,0,3000,'right','Asia','Eastern Africa','https://flagcdn.com/io.svg'),
-('ATA','AQ',0,0,1000,'right','Antarctica','','https://flagcdn.com/aq.svg'),
+('ATA','AQ',1,0,1000,'right','Antarctica','','https://flagcdn.com/aq.svg'), -- Since Antarctica has a special status, we defined it as independent --
 ('MSR','MS',0,0,4922,'left','North America','Caribbean','https://flagcdn.com/ms.svg'),
 ('ALA','AX',0,0,29458,'right','Europe','Northern Europe','https://flagcdn.com/ax.svg'),
 ('GUM','GU',0,0,168783,'right','Oceania','Micronesia','https://flagcdn.com/gu.svg'),

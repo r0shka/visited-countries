@@ -89,7 +89,6 @@ class MainViewModel(
             }
         }
     }
-
 }
 
 sealed class ViewState {
