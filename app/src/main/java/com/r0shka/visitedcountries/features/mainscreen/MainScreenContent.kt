@@ -17,10 +17,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Done
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -59,6 +63,7 @@ fun MainScreenContent(
                 ) {
                 item {
                     Column {
+                        Spacer(modifier = Modifier.height(Size.size8))
                         CountryFilter(state.filters, onFilterSelected)
                         Spacer(modifier = Modifier.height(Size.size16))
                         Text(
@@ -118,7 +123,18 @@ private fun CountryFilter(
                 onClick = { onFilterSelected(it.filterCategory) },
                 label = {
                     Text(text = it.filterName)
-                })
+                },
+                leadingIcon = if (it.selected) {
+                    {
+                        Icon(
+                            imageVector = Icons.Rounded.Done,
+                            contentDescription = "Done icon",
+                            modifier = Modifier.size(FilterChipDefaults.IconSize)
+                        )
+                    }
+                } else {
+                    null
+                },)
             Spacer(modifier = Modifier.width(Size.size8))
         }
         Spacer(modifier = Modifier.width(Size.size8))
