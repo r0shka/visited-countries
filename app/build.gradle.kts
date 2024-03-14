@@ -81,6 +81,8 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
     implementation("com.google.maps.android:maps-compose:4.3.3")
+    implementation("com.google.maps.android:android-maps-utils:3.8.0")
+    implementation("com.google.maps.android:maps-utils-ktx:5.0.0")
 
     implementation("app.cash.sqldelight:android-driver:2.0.1")
     implementation("androidx.test:core-ktx:1.5.0")
