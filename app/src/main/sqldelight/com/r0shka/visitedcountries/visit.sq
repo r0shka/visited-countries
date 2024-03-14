@@ -16,3 +16,8 @@ findOneById:
 SELECT *
 FROM DbVisit
 WHERE id = ?;
+
+deleteOneByCountryCode:
+DELETE
+FROM DbVisit
+WHERE country_code_cca3 = ?;

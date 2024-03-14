@@ -17,7 +17,15 @@ class MainActivity : ComponentActivity() {
         setContent {
             val state = viewModel.viewState().collectAsState()
             AppTheme {
-                MainScreen(state.value)
+                MainScreen(
+                    state = state.value,
+                    onCountrySelected = { checked, countryCodeCca3 ->
+                        viewModel.onVisitUpdated(countryCodeCca3 = countryCodeCca3, visited = checked)
+                    },
+                    onFilterSelected = {
+                        viewModel.onFilterSelected(it)
+                    }
+                )
             }
         }
     }

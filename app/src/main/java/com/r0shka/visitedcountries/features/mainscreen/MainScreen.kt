@@ -1,11 +1,7 @@
 package com.r0shka.visitedcountries.features.mainscreen
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -22,7 +18,11 @@ import com.r0shka.visitedcountries.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(state: ViewState) {
+fun MainScreen(
+    state: ViewState,
+    onCountrySelected: (Boolean, String) -> Unit,
+    onFilterSelected: (FilterCategory) -> Unit,
+) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
 
     Scaffold(
@@ -42,14 +42,16 @@ fun MainScreen(state: ViewState) {
                 },
                 scrollBehavior = scrollBehavior,
             )
-        },
-        floatingActionButton = {
-            FloatingActionButton(onClick = { }) {
-                Icon(Icons.Default.Add, contentDescription = "Add")
-            }
         }
-    ) {
-        MainScreenContent(state, it)
+    ) { paddingValues ->
+        MainScreenContent(
+            state = state,
+            paddingValues = paddingValues,
+            onCountrySelected = { checked, countryCodeCca3 ->
+                onCountrySelected(checked, countryCodeCca3)
+            },
+            onFilterSelected = { onFilterSelected(it) }
+        )
     }
 }
 
@@ -58,8 +60,11 @@ fun MainScreen(state: ViewState) {
 fun MainScreenPreview() {
     MainScreen(
         ViewState.Success(
-            visitedCountries = PreviewData.countriesVisited,
-            availableCountries = PreviewData.countriesAvailable,
+            countries = PreviewData.countries,
+            visitedCountriesNumber = 196,
+            filters = emptyList(),
         ),
+        onCountrySelected = { _, _ -> Pair(true, "test") },
+        onFilterSelected = { _ -> }
     )
 }

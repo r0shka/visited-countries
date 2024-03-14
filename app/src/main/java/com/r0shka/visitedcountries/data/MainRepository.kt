@@ -40,4 +40,12 @@ class MainRepository(
         }
     }
 
+    suspend fun removeVisit(countryCodeCca3: String): Result<Unit> = withContext(dispatcher) {
+        try {
+            Result.Success(dataSource.removeVisit(countryCodeCca3))
+        } catch (e: Throwable) {
+            Result.Error(e)
+        }
+    }
+
 }

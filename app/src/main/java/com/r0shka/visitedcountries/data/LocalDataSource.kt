@@ -29,4 +29,8 @@ class LocalDataSource(
     fun addVisit(visit: DbVisit) {
         visitQueries.insert(visit)
     }
+
+    fun removeVisit(countryCodeCca3: String) {
+        visitQueries.deleteOneByCountryCode(countryCodeCca3)
+    }
 }

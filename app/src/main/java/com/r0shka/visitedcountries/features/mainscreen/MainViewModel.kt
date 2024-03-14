@@ -8,6 +8,9 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import com.r0shka.visitedcountries.data.LocalDataSource
 import com.r0shka.visitedcountries.data.MainRepository
 import com.r0shka.visitedcountries.data.Result
+import com.r0shka.visitedcountries.domain.entities.Visit
+import com.r0shka.visitedcountries.domain.usecase.GetFilteredCountriesUseCase
+import com.r0shka.visitedcountries.features.mainscreen.filter.CountryFilterCategoryUiModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,16 +20,31 @@ import kotlinx.coroutines.launch
 class MainViewModel(
     private val repo: MainRepository,
     private val mapper: UiModelMapper,
+    private val getFilteredCountriesUseCase: GetFilteredCountriesUseCase,
 ) : ViewModel() {
 
     init {
         load()
     }
 
-    private val countries = mutableListOf<CountryUiModel>()
+    private val fullCountryList = mutableListOf<CountryUiModel>()
+    private var selectedFilter: FilterCategory = FilterCategory.ALL
 
     private val viewState: MutableStateFlow<ViewState> = MutableStateFlow(ViewState.Loading)
     fun viewState(): StateFlow<ViewState> = viewState.asStateFlow()
+
+    fun onVisitUpdated(countryCodeCca3: String, visited: Boolean) {
+        val indexOfCountry = fullCountryList
+            .indexOfFirst { it.countryCodeCca3 == countryCodeCca3 }
+        fullCountryList[indexOfCountry] = fullCountryList[indexOfCountry].copy(visited = visited)
+        updateVisit(countryCodeCca3 = countryCodeCca3, visited = visited)
+        updateState()
+    }
+
+    fun onFilterSelected(filter: FilterCategory) {
+        selectedFilter = filter
+        updateState()
+    }
 
     private fun load() = viewModelScope.launch {
         val countriesResult = async { repo.getAllCountries() }.await()
@@ -35,7 +53,7 @@ class MainViewModel(
         when {
             countriesResult is Result.Success && visitsResult is Result.Success -> {
                 countriesResult.value.map { country ->
-                    countries.add(
+                    fullCountryList.add(
                         mapper.mapCountry(
                             country = country,
                             visit = visitsResult.value.find { visit ->
@@ -43,33 +61,76 @@ class MainViewModel(
                             })
                     )
                 }
-                if (countries.isNotEmpty()) {
-                    viewState.value = ViewState.Success(
-                        visitedCountries = countries
-                            .toList()
-                            .sortedBy {
-                                it.localizedDisplayName
-                            }
-                            .filter {
-                                it.visited
-                            },
-                        availableCountries = countries
-                            .toList()
-                            .sortedBy {
-                                it.localizedDisplayName
-                            }
-                            .filter {
-                                it.visited.not()
-                            },
-                    )
-                } else {
-                    viewState.value = ViewState.Empty
-                }
+                updateState()
             }
 
             else -> viewState.value = ViewState.Error
         }
     }
+
+    private fun updateState() {
+        val currentlyDisplayedCountries = getFilteredCountriesUseCase(selectedFilter, fullCountryList)
+        viewState.value = ViewState.Success(
+            countries = currentlyDisplayedCountries
+                .sortedWith(
+                    compareByDescending<CountryUiModel> { it.visited }
+                        .thenBy { it.localizedDisplayName }
+                ),
+            visitedCountriesNumber = currentlyDisplayedCountries.filter { it.visited }.size,
+            filters = getFilters(),
+        )
+    }
+
+    private fun updateVisit(countryCodeCca3: String, visited: Boolean) = viewModelScope.launch {
+        if (visited) {
+            repo.addVisit(Visit(countryCodeCca3 = countryCodeCca3, visitedAt = System.currentTimeMillis()))
+        } else {
+            repo.removeVisit(countryCodeCca3 = countryCodeCca3)
+        }
+    }
+
+    private fun getFilters(): List<CountryFilterCategoryUiModel> = listOf(
+        CountryFilterCategoryUiModel(
+            filterCategory = FilterCategory.ALL,
+            selected = selectedFilter == FilterCategory.ALL,
+            filterName = "All"
+        ),
+        CountryFilterCategoryUiModel(
+            filterCategory = FilterCategory.AFRICA,
+            selected = selectedFilter == FilterCategory.AFRICA,
+            filterName = "Africa"
+        ),
+        CountryFilterCategoryUiModel(
+            filterCategory = FilterCategory.ASIA,
+            selected = selectedFilter == FilterCategory.ASIA,
+            filterName = "Asia"
+        ),
+        CountryFilterCategoryUiModel(
+            filterCategory = FilterCategory.EUROPE,
+            selected = selectedFilter == FilterCategory.EUROPE,
+            filterName = "Europe"
+        ),
+        CountryFilterCategoryUiModel(
+            filterCategory = FilterCategory.NORTH_AMERICA,
+            selected = selectedFilter == FilterCategory.NORTH_AMERICA,
+            filterName = "North America"
+        ),
+        CountryFilterCategoryUiModel(
+            filterCategory = FilterCategory.SOUTH_AMERICA,
+            selected = selectedFilter == FilterCategory.SOUTH_AMERICA,
+            filterName = "South America"
+        ),
+        CountryFilterCategoryUiModel(
+            filterCategory = FilterCategory.OCEANIA,
+            selected = selectedFilter == FilterCategory.OCEANIA,
+            filterName = "Oceania"
+        ),
+        CountryFilterCategoryUiModel(
+            filterCategory = FilterCategory.EU,
+            selected = selectedFilter == FilterCategory.EU,
+            filterName = "EU"
+        ),
+    )
 
     companion object {
         val Factory: ViewModelProvider.Factory = object : ViewModelProvider.Factory {
@@ -85,6 +146,7 @@ class MainViewModel(
                         dataSource = LocalDataSource(context = application.applicationContext)
                     ),
                     mapper = UiModelMapper(context = application.applicationContext),
+                    getFilteredCountriesUseCase = GetFilteredCountriesUseCase()
                 ) as T
             }
         }
@@ -93,11 +155,22 @@ class MainViewModel(
 
 sealed class ViewState {
     data object Loading : ViewState()
-    data object Empty : ViewState()
     data class Success(
-        val visitedCountries: List<CountryUiModel>,
-        val availableCountries: List<CountryUiModel>,
+        val filters: List<CountryFilterCategoryUiModel>,
+        val countries: List<CountryUiModel>,
+        val visitedCountriesNumber: Int,
     ) : ViewState()
 
     data object Error : ViewState()
+}
+
+enum class FilterCategory {
+    ALL,
+    EUROPE,
+    ASIA,
+    AFRICA,
+    NORTH_AMERICA,
+    SOUTH_AMERICA,
+    OCEANIA,
+    EU,
 }

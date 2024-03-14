@@ -74,6 +74,7 @@ dependencies {
 
     implementation("app.cash.sqldelight:android-driver:2.0.1")
     implementation("androidx.test:core-ktx:1.5.0")
+    implementation("com.airbnb.android:lottie:6.4.0")
 
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.robolectric:robolectric:4.11.1")
