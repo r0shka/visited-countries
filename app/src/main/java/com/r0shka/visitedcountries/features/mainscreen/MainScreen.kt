@@ -60,8 +60,10 @@ fun MainScreen(
 fun MainScreenPreview() {
     MainScreen(
         ViewState.Success(
-            countries = PreviewData.countries,
-            visitedCountriesNumber = 196,
+            allCountries = PreviewData.countries,
+            filteredCountries = PreviewData.countries,
+            allVisitedCountriesNumber = 196,
+            filteredVisitedCountriesNumber = 30,
             filters = emptyList(),
         ),
         onCountrySelected = { _, _ -> Pair(true, "test") },

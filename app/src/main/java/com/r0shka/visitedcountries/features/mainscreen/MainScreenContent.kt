@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -34,23 +33,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.google.android.gms.maps.model.CameraPosition
-import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.compose.GoogleMap
-import com.google.maps.android.compose.MapEffect
-import com.google.maps.android.compose.MapsComposeExperimentalApi
-import com.google.maps.android.compose.Marker
-import com.google.maps.android.compose.MarkerState
-import com.google.maps.android.compose.rememberCameraPositionState
-import com.google.maps.android.data.geojson.GeoJsonLayer
-import com.r0shka.visitedcountries.R
 import com.r0shka.visitedcountries.features.mainscreen.filter.CountryFilterCategoryUiModel
 import com.r0shka.visitedcountries.ui.theme.Size
 import com.r0shka.visitedcountries.ui.theme.Spacing
+
 
 private val filter = ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0f) })
 
@@ -66,7 +55,7 @@ fun MainScreenContent(
         ViewState.Error -> {}
         ViewState.Loading -> {}
         is ViewState.Success -> {
-            val visitedCountryCount: Int by animateIntAsState(targetValue = state.visitedCountriesNumber, label = "")
+            val visitedCountryCount: Int by animateIntAsState(targetValue = state.filteredVisitedCountriesNumber, label = "")
             LazyColumn(
                 modifier = Modifier
                     .padding(paddingValues)
@@ -78,7 +67,7 @@ fun MainScreenContent(
                         Spacer(modifier = Modifier.height(Size.size8))
                         CountryFilter(state.filters, onFilterSelected)
                         Spacer(modifier = Modifier.height(Size.size16))
-                        MapOverview()
+                        MapOverview(state)
                         Text(
                             modifier = Modifier.padding(horizontal = Spacing.spacing16),
                             text = "You've visited...",
@@ -101,7 +90,7 @@ fun MainScreenContent(
                 }
 
                 items(
-                    items = state.countries,
+                    items = state.filteredCountries,
                     key = { it.countryCodeCca3 }
                 ) { country ->
 
@@ -155,34 +144,6 @@ private fun CountryFilter(
     }
 }
 
-@OptIn(MapsComposeExperimentalApi::class)
-@Composable
-private fun MapOverview() {
-    val singapore = LatLng(50.0, 20.0)
-    val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(singapore, 3f)
-    }
-    val context = LocalContext.current
-
-    Card(
-        onClick = {},
-        modifier = Modifier
-            .height(200.dp)
-            .fillMaxSize()
-            .padding(vertical = Spacing.spacing4, horizontal = Spacing.spacing16),
-    ) {
-        GoogleMap(
-            cameraPositionState = cameraPositionState
-        ) {
-            MapEffect { map ->
-                val layer = GeoJsonLayer(map, R.raw.borders, context)
-                layer.addLayerToMap()
-            }
-
-        }
-    }
-}
-
 @Composable
 private fun CountryItem(
     modifier: Modifier = Modifier,
@@ -233,8 +194,10 @@ private fun CountryItem(
 fun MainScreenContentSuccessPreview() {
     MainScreenContent(
         ViewState.Success(
-            countries = PreviewData.countries,
-            visitedCountriesNumber = 3,
+            filteredCountries = PreviewData.countries,
+            allCountries = PreviewData.countries,
+            allVisitedCountriesNumber = 3,
+            filteredVisitedCountriesNumber = 4,
             filters = listOf(
                 CountryFilterCategoryUiModel(
                     filterCategory = FilterCategory.ALL,

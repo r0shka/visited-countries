@@ -69,14 +69,16 @@ class MainViewModel(
     }
 
     private fun updateState() {
-        val currentlyDisplayedCountries = getFilteredCountriesUseCase(selectedFilter, fullCountryList)
+        val filteredCountries = getFilteredCountriesUseCase(selectedFilter, fullCountryList)
         viewState.value = ViewState.Success(
-            countries = currentlyDisplayedCountries
+            filteredCountries = filteredCountries
                 .sortedWith(
                     compareByDescending<CountryUiModel> { it.visited }
                         .thenBy { it.localizedDisplayName }
                 ),
-            visitedCountriesNumber = currentlyDisplayedCountries.filter { it.visited }.size,
+            allCountries = fullCountryList,
+            filteredVisitedCountriesNumber = filteredCountries.filter { it.visited }.size,
+            allVisitedCountriesNumber = fullCountryList.filter { it.visited }.size,
             filters = getFilters(),
         )
     }
@@ -157,8 +159,10 @@ sealed class ViewState {
     data object Loading : ViewState()
     data class Success(
         val filters: List<CountryFilterCategoryUiModel>,
-        val countries: List<CountryUiModel>,
-        val visitedCountriesNumber: Int,
+        val allCountries: List<CountryUiModel>,
+        val filteredCountries: List<CountryUiModel>,
+        val allVisitedCountriesNumber: Int,
+        val filteredVisitedCountriesNumber: Int,
     ) : ViewState()
 
     data object Error : ViewState()
