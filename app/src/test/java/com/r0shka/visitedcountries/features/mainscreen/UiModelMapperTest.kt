@@ -31,7 +31,9 @@ class UiModelMapperTest {
         val expected = CountryUiModel(
             localizedDisplayName = "Austria",
             flag = R.drawable.at,
-            visited = true
+            visited = true,
+            continent = Continent.EUROPE,
+            countryCodeCca3 = "AUT"
         )
 
         // Then
@@ -44,11 +46,19 @@ class UiModelMapperTest {
         Locale.setDefault(Locale("fr", "FR"))
 
         // When
-        val actual = mapper.mapCountry(country.copy(codeCca2 = "us"), null)
+        val actual = mapper.mapCountry(
+            country.copy(
+                codeCca2 = "us",
+                codeCca3 = "usa",
+                continent = Continent.NORTH_AMERICA
+            ), null
+        )
         val expected = CountryUiModel(
             localizedDisplayName = "États-Unis",
             flag = R.drawable.us,
-            visited = false
+            visited = false,
+            continent = Continent.NORTH_AMERICA,
+            countryCodeCca3 = "usa"
         )
 
         // Then
