@@ -1,9 +1,6 @@
 package com.r0shka.visitedcountries.features.mainscreen
 
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -14,7 +11,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -28,7 +24,6 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.data.geojson.GeoJsonLayer
 import com.google.maps.android.data.geojson.GeoJsonPolygonStyle
 import com.r0shka.visitedcountries.R
-import com.r0shka.visitedcountries.ui.theme.Spacing
 
 private const val POSITION_ANIMATION_DURATION = 1000
 
@@ -41,7 +36,10 @@ private val southAmericaLatLng = LatLng(-20.0, -65.0)
 
 @OptIn(MapsComposeExperimentalApi::class)
 @Composable
-fun MapOverview(state: ViewState.Success) {
+fun MapOverview(
+    state: ViewState.Success,
+    modifier: Modifier,
+) {
     val visitedCountryFillColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f).toArgb()
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(europeLatLng, 0f)
@@ -119,43 +117,40 @@ fun MapOverview(state: ViewState.Success) {
     }
     val context = LocalContext.current
 
-    Card(
-        onClick = {},
-        modifier = Modifier
-            .height(300.dp)
-            .fillMaxSize()
-            .padding(vertical = Spacing.spacing4, horizontal = Spacing.spacing16),
+    GoogleMap(
+        modifier = modifier.then(
+            Modifier
+                .fillMaxSize()
+        ),
+        cameraPositionState = cameraPositionState,
+        uiSettings = MapUiSettings(
+            compassEnabled = false,
+            zoomControlsEnabled = false,
+            tiltGesturesEnabled = false,
+            rotationGesturesEnabled = false,
+            myLocationButtonEnabled = false,
+            mapToolbarEnabled = false,
+        ),
+        properties = MapProperties(
+            mapStyleOptions = MapStyleOptions.loadRawResourceStyle(context, R.raw.map_style_dark),
+            minZoomPreference = 0f,
+            maxZoomPreference = 10f,
+        ),
+        // TODO uncomment in case of publishing to show Google logo on maps
+        // contentPadding = PaddingValues(bottom = Spacing.spacing48)
     ) {
-        GoogleMap(
-            cameraPositionState = cameraPositionState,
-            uiSettings = MapUiSettings(
-                compassEnabled = false,
-                zoomControlsEnabled = false,
-                tiltGesturesEnabled = false,
-                rotationGesturesEnabled = false,
-                myLocationButtonEnabled = false,
-                mapToolbarEnabled = false,
-            ),
-            properties = MapProperties(
-                mapStyleOptions = MapStyleOptions.loadRawResourceStyle(context, R.raw.map_style_dark),
-                minZoomPreference = 0f,
-                maxZoomPreference = 10f,
-            ),
-        ) {
-            MapEffect { map ->
-                layer = GeoJsonLayer(map, R.raw.borders, context)
+        MapEffect { map ->
+            layer = GeoJsonLayer(map, R.raw.borders, context)
 
-                layer?.features?.forEach { feature ->
-                    feature.polygonStyle = GeoJsonPolygonStyle().apply {
-                        this.strokeWidth = 3f
-                        if (visitedCountriesCodeList.contains(feature.getProperty("ISO_A3"))) {
-                            this.fillColor = visitedCountryFillColor
-                        }
+            layer?.features?.forEach { feature ->
+                feature.polygonStyle = GeoJsonPolygonStyle().apply {
+                    this.strokeWidth = 3f
+                    if (visitedCountriesCodeList.contains(feature.getProperty("ISO_A3"))) {
+                        this.fillColor = visitedCountryFillColor
                     }
                 }
-                layer?.addLayerToMap()
             }
-
+            layer?.addLayerToMap()
         }
     }
 }
