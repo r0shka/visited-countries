@@ -34,8 +34,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.r0shka.visitedcountries.R
 import com.r0shka.visitedcountries.features.mainscreen.filter.CountryFilterCategoryUiModel
 import com.r0shka.visitedcountries.ui.theme.Size
 import com.r0shka.visitedcountries.ui.theme.Spacing
@@ -70,7 +72,7 @@ fun MainScreenContent(
                         MapOverview(state)
                         Text(
                             modifier = Modifier.padding(horizontal = Spacing.spacing16),
-                            text = "You've visited...",
+                            text = stringResource(id = R.string.main_screen_you_visited),
                             style = MaterialTheme.typography.titleMedium,
                         )
                         Row(modifier = Modifier.padding(horizontal = Spacing.spacing16)) {

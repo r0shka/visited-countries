@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Visited Countries</string>
+    <string name="main_screen_you_visited">You\'ve visited…</string>
 </resources>

@@ -30,6 +30,8 @@ import com.google.maps.android.data.geojson.GeoJsonPolygonStyle
 import com.r0shka.visitedcountries.R
 import com.r0shka.visitedcountries.ui.theme.Spacing
 
+private const val POSITION_ANIMATION_DURATION = 1000
+
 private val africaLatLng = LatLng(0.0, 10.2966665)
 private val europeLatLng = LatLng(50.0, 20.0)
 private val asiaLatLng = LatLng(30.0, 85.0)
@@ -63,37 +65,37 @@ fun MapOverview(state: ViewState.Success) {
         when (selectedFilter.filterCategory) {
             FilterCategory.EUROPE -> cameraPositionState.animate(
                 update = CameraUpdateFactory.newLatLng(europeLatLng),
-                durationMs = 1000,
+                durationMs = POSITION_ANIMATION_DURATION,
             )
 
             FilterCategory.ASIA -> cameraPositionState.animate(
                 update = CameraUpdateFactory.newLatLng(asiaLatLng),
-                durationMs = 1000,
+                durationMs = POSITION_ANIMATION_DURATION,
             )
 
             FilterCategory.AFRICA -> cameraPositionState.animate(
                 update = CameraUpdateFactory.newLatLng(africaLatLng),
-                durationMs = 1000,
+                durationMs = POSITION_ANIMATION_DURATION,
             )
 
             FilterCategory.NORTH_AMERICA -> cameraPositionState.animate(
                 update = CameraUpdateFactory.newLatLng(northAmericaLatLng),
-                durationMs = 1000,
+                durationMs = POSITION_ANIMATION_DURATION,
             )
 
             FilterCategory.SOUTH_AMERICA -> cameraPositionState.animate(
                 update = CameraUpdateFactory.newLatLng(southAmericaLatLng),
-                durationMs = 1000,
+                durationMs = POSITION_ANIMATION_DURATION,
             )
 
             FilterCategory.OCEANIA -> cameraPositionState.animate(
                 update = CameraUpdateFactory.newLatLng(oceaniaLatLng),
-                durationMs = 1000,
+                durationMs = POSITION_ANIMATION_DURATION,
             )
 
             FilterCategory.EU -> cameraPositionState.animate(
                 update = CameraUpdateFactory.newLatLng(europeLatLng),
-                durationMs = 1000,
+                durationMs = POSITION_ANIMATION_DURATION,
             )
 
             else -> {}
@@ -128,7 +130,7 @@ fun MapOverview(state: ViewState.Success) {
             cameraPositionState = cameraPositionState,
             uiSettings = MapUiSettings(
                 compassEnabled = false,
-                zoomControlsEnabled = true,
+                zoomControlsEnabled = false,
                 tiltGesturesEnabled = false,
                 rotationGesturesEnabled = false,
                 myLocationButtonEnabled = false,
