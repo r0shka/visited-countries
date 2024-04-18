@@ -1,19 +1,23 @@
 package com.r0shka.visitedcountries.features.mainscreen
 
+import androidx.compose.foundation.layout.height
+import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
+import androidx.compose.material3.rememberBottomSheetScaffoldState
+import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.r0shka.visitedcountries.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -23,35 +27,51 @@ fun MainScreen(
     onCountrySelected: (Boolean, String) -> Unit,
     onFilterSelected: (FilterCategory) -> Unit,
 ) {
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
+    when (state) {
+        ViewState.Error -> {}
+        ViewState.Loading -> {}
+        is ViewState.Success -> {
 
-    Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = {
-            TopAppBar(
-                colors = topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.primary,
-                ),
-                title = {
-                    Text(
-                        stringResource(id = R.string.app_name),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
+            val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
+            val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
+                bottomSheetState = rememberStandardBottomSheetState()
+            )
+
+            BottomSheetScaffold(
+                sheetContent = {
+                    CountryListBottomSheet(
+                        state = state,
+                        onCountrySelected = onCountrySelected,
                     )
                 },
-                scrollBehavior = scrollBehavior,
-            )
+                topBar = {
+                    TopAppBar(
+                        colors = topAppBarColors(
+                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            titleContentColor = MaterialTheme.colorScheme.primary,
+                        ),
+                        title = {
+                            Text(
+                                stringResource(id = R.string.app_name),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                        },
+                        scrollBehavior = scrollBehavior,
+                    )
+                },
+                scaffoldState = bottomSheetScaffoldState,
+                sheetPeekHeight = LocalConfiguration.current.screenHeightDp.dp / 3,
+            ) {
+                MapOverview(
+                    state = state,
+                    modifier = Modifier.height(
+                        LocalConfiguration.current.screenHeightDp.dp * 2 / 3,
+                    )
+                )
+                CountryFilter(filters = state.filters, onFilterSelected = onFilterSelected)
+            }
         }
-    ) { paddingValues ->
-        MainScreenContent(
-            state = state,
-            paddingValues = paddingValues,
-            onCountrySelected = { checked, countryCodeCca3 ->
-                onCountrySelected(checked, countryCodeCca3)
-            },
-            onFilterSelected = { onFilterSelected(it) }
-        )
     }
 }
 
