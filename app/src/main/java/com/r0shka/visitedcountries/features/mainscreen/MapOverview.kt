@@ -125,16 +125,15 @@ fun MapOverview(
         cameraPositionState = cameraPositionState,
         uiSettings = MapUiSettings(
             compassEnabled = false,
-            zoomControlsEnabled = false,
             tiltGesturesEnabled = false,
             rotationGesturesEnabled = false,
             myLocationButtonEnabled = false,
             mapToolbarEnabled = false,
+            zoomControlsEnabled = false,
+            zoomGesturesEnabled = false,
         ),
         properties = MapProperties(
             mapStyleOptions = MapStyleOptions.loadRawResourceStyle(context, R.raw.map_style_dark),
-            minZoomPreference = 0f,
-            maxZoomPreference = 10f,
         ),
         // TODO uncomment in case of publishing to show Google logo on maps
         // contentPadding = PaddingValues(bottom = Spacing.spacing48)

@@ -1,5 +1,8 @@
 package com.r0shka.visitedcountries.features.mainscreen
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -63,13 +66,20 @@ fun MainScreen(
                 scaffoldState = bottomSheetScaffoldState,
                 sheetPeekHeight = LocalConfiguration.current.screenHeightDp.dp / 3,
             ) {
-                MapOverview(
-                    state = state,
-                    modifier = Modifier.height(
-                        LocalConfiguration.current.screenHeightDp.dp * 2 / 3,
+                Box(
+                    modifier = Modifier
+                        .background(MaterialTheme.colorScheme.background)
+                        .fillMaxSize()
+                ) {
+                    MapOverview(
+                        state = state,
+                        modifier = Modifier.height(
+                            LocalConfiguration.current.screenHeightDp.dp * 2 / 3,
+                        )
                     )
-                )
-                CountryFilter(filters = state.filters, onFilterSelected = onFilterSelected)
+                    CountryFilter(filters = state.filters, onFilterSelected = onFilterSelected)
+                }
+
             }
         }
     }
